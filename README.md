@@ -225,3 +225,10 @@ Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
      WHERE ID_Pedido = ID_Pedido;
  END
 ```
+Se lo puede invocar de la siguiente forma:
+
+``` sql
+ CALL RegistrarPedido('2024-09-05', 1, 2, 2, 3, 1, NULL, NULL);
+```
+
+Este ejemplo inserta dos platos en el pedido. Si no hay un tercer plato, puedes pasar NULL para Plato3_ID y Plato3_Cantidad.
