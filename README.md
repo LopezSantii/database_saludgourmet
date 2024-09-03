@@ -27,13 +27,13 @@ Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
   * Tel (VARCHAR(20)): Teléfono del cliente.
 
 ``` sql
-CREATE TABLE Cliente (
-  ID_Cliente INT AUTO_INCREMENT PRIMARY KEY,
-  Nombre VARCHAR(255) NOT NULL,
-  Apellido VARCHAR(255) NOT NULL,
-  Dirección VARCHAR(255) NOT NULL,
-  Teléfono VARCHAR(20) NOT NULL
-);
+ CREATE TABLE Cliente (
+   ID_Cliente INT AUTO_INCREMENT PRIMARY KEY,
+   Nombre VARCHAR(255) NOT NULL,
+   Apellido VARCHAR(255) NOT NULL,
+   Dirección VARCHAR(255) NOT NULL,
+   Teléfono VARCHAR(20) NOT NULL
+ );
 ```
 
 ### Ingrediente
@@ -44,11 +44,11 @@ CREATE TABLE Cliente (
   * Precio (DECIMAL(10)): Precio del ingrediente.
 
 ``` sql
-CREATE TABLE Ingrediente (
-  ID_Ingrediente INT AUTO_INCREMENT PRIMARY KEY,
-  Nombre VARCHAR(255) NOT NULL,
-  Precio DECIMAL(10, 2) NOT NULL
-);
+ CREATE TABLE Ingrediente (
+   ID_Ingrediente INT AUTO_INCREMENT PRIMARY KEY,
+   Nombre VARCHAR(255) NOT NULL,
+   Precio DECIMAL(10, 2) NOT NULL
+ );
 ```
 
 ### Plato
@@ -58,10 +58,10 @@ CREATE TABLE Ingrediente (
   * Nombre (VARCHAR(255)): Nombre del plato.
 
 ``` sql
-CREATE TABLE Plato (
-  ID_Plato INT AUTO_INCREMENT PRIMARY KEY,
-  Nombre VARCHAR(255) NOT NULL
-);
+ CREATE TABLE Plato (
+   ID_Plato INT AUTO_INCREMENT PRIMARY KEY,
+   Nombre VARCHAR(255) NOT NULL
+ );
 ```
 
 ### Pedido
@@ -73,13 +73,13 @@ CREATE TABLE Plato (
   * ID_Cliente (INT, FK): Identificador del cliente que realizó el pedido.
   
 ``` sql
-CREATE TABLE Pedido (
-  ID_Pedido INT AUTO_INCREMENT PRIMARY KEY,
-  Fecha DATE NOT NULL,
-  Total DECIMAL(10, 2) NOT NULL,
-  ID_Cliente INT,
-  FOREIGN KEY (ID_Cliente) REFERENCES Cliente(ID_Cliente)
-);
+ CREATE TABLE Pedido (
+   ID_Pedido INT AUTO_INCREMENT PRIMARY KEY,
+   Fecha DATE NOT NULL,
+   Total DECIMAL(10, 2) NOT NULL,
+   ID_Cliente INT,
+   FOREIGN KEY (ID_Cliente) REFERENCES Cliente(ID_Cliente)
+ );
 ```
 
 ### Plato_Ingrediente
@@ -89,13 +89,13 @@ CREATE TABLE Pedido (
   *  ID_Ingrediente (INT, PK, FK): Identificador del ingrediente.
 
 ``` sql 
-CREATE TABLE Plato_Ingrediente (
-  ID_Plato INT,
-  ID_Ingrediente INT,
-  PRIMARY KEY (ID_Plato, ID_Ingrediente),
-  FOREIGN KEY (ID_Plato) REFERENCES Plato(ID_Plato),
-  FOREIGN KEY (ID_Ingrediente) REFERENCES Ingrediente(ID_Ingrediente)
-);
+ CREATE TABLE Plato_Ingrediente (
+   ID_Plato INT,
+   ID_Ingrediente INT,
+   PRIMARY KEY (ID_Plato, ID_Ingrediente),
+   FOREIGN KEY (ID_Plato) REFERENCES Plato(ID_Plato),
+   FOREIGN KEY (ID_Ingrediente) REFERENCES Ingrediente(ID_Ingrediente)
+ );
 ```
 
 ### Pedido_Plato
@@ -106,14 +106,14 @@ CREATE TABLE Plato_Ingrediente (
   * Cantidad (INT): Cantidad del plato en el pedido.
 
 ``` sql
-CREATE TABLE Pedido_Plato (
-  ID_Pedido INT,
-  ID_Plato INT,
-  Cantidad INT NOT NULL,
-  PRIMARY KEY (ID_Pedido, ID_Plato),
-  FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido),
-  FOREIGN KEY (ID_Plato) REFERENCES Plato(ID_Plato)
-);
+ CREATE TABLE Pedido_Plato (
+   ID_Pedido INT,
+   ID_Plato INT,
+   Cantidad INT NOT NULL,
+   PRIMARY KEY (ID_Pedido, ID_Plato),
+   FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido),
+   FOREIGN KEY (ID_Plato) REFERENCES Plato(ID_Plato)
+ );
 ```
 ## Listado de Vistas
 ### VistaClientesPedidos
@@ -121,7 +121,7 @@ CREATE TABLE Pedido_Plato (
 * Objetivo: Facilitar la consulta rápida de los pedidos asociados a cada cliente, lo cual es útil para el análisis de comportamiento de compra y la gestión de relaciones con los clientes.
 * Tablas Compuestas: Cliente, Pedido.
   
-  ``` sql
+``` sql
   CREATE VIEW VistaClientesPedidos AS
   SELECT 
     Cliente.Nombre,
@@ -131,13 +131,13 @@ CREATE TABLE Pedido_Plato (
     Pedido.Total
   FROM Cliente
   JOIN Pedido ON Cliente.ID_Cliente = Pedido.ID_Cliente;
-  
+```
 ### VistaPlatosIngredientes
 * Descripción: Muestra los platos ofrecidos junto con los ingredientes que los componen.
 * Objetivo: Proporcionar una visión clara de la composición de cada plato, útil para la gestión de recetas y control de inventario.
 * Tablas Compuestas: Plato, Ingrediente, Plato_Ingrediente.
   
-  ``` sql
+``` sql
   CREATE VIEW VistaPlatosIngredientes AS
   SELECT 
     Plato.Nombre AS Plato,
@@ -146,14 +146,15 @@ CREATE TABLE Pedido_Plato (
   FROM Plato
   JOIN Plato_Ingrediente ON Plato.ID_Plato = Plato_Ingrediente.ID_Plato
   JOIN Ingrediente ON Ingrediente.ID_Ingrediente = Plato_Ingrediente.ID_Ingrediente;
-  
+```
+
 ## Listado de Funciones
 ### CalcularTotalPedido
 * Descripción: Calcula el total de un pedido sumando el costo de los platos en función de sus ingredientes y la cantidad ordenada.
 * Objetivo: Automatizar el cálculo del total de un pedido para garantizar precisión en la facturación.
 * Tablas Manipuladas: Pedido_Plato, Plato_Ingrediente, Ingrediente.
 
-  ``` sql
+``` sql
   CREATE FUNCTION CalcularTotalPedido(@ID_Pedido INT)
   RETURNS DECIMAL(10, 2)
   AS
@@ -167,14 +168,14 @@ CREATE TABLE Pedido_Plato (
       
       RETURN @Total;
   END;
-
+```
 ## Listado de Stored Procedures
 ### RegistrarPedido
 * Descripción: Inserta un nuevo pedido en la base de datos, asignando un cliente y calculando el total automáticamente.
 * Objetivo: Facilitar el registro de nuevos pedidos y asegurar que todos los datos relacionados se gestionen de forma coherente y eficiente.
 * Tablas Involucradas: Pedido, Pedido_Plato.
 
-  ``` sql
+``` sql
   CREATE PROCEDURE RegistrarPedido
       @Fecha DATE,
       @ID_Cliente INT,
@@ -205,4 +206,4 @@ CREATE TABLE Pedido_Plato (
       SET Total = @Total
       WHERE ID_Pedido = @ID_Pedido;
   END;
-
+```
