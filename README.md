@@ -154,7 +154,7 @@ CREATE TABLE Pedido_Plato (
 * Tablas Manipuladas: Pedido_Plato, Plato_Ingrediente, Ingrediente.
 
   ``` sql
-    CREATE FUNCTION CalcularTotalPedido(@ID_Pedido INT)
+  CREATE FUNCTION CalcularTotalPedido(@ID_Pedido INT)
   RETURNS DECIMAL(10, 2)
   AS
   BEGIN
