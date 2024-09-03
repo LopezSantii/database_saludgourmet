@@ -155,55 +155,73 @@ Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
 * Tablas Manipuladas: Pedido_Plato, Plato_Ingrediente, Ingrediente.
 
 ``` sql
-  CREATE FUNCTION CalcularTotalPedido(@ID_Pedido INT)
-  RETURNS DECIMAL(10, 2)
-  AS
-  BEGIN
-      DECLARE @Total DECIMAL(10, 2);
-      
-      SELECT @Total = SUM(Plato_Ingrediente.Costo * Pedido_Plato.Cantidad)
-      FROM Pedido_Plato
-      JOIN Plato_Ingrediente ON Pedido_Plato.ID_Plato = Plato_Ingrediente.ID_Plato
-      WHERE Pedido_Plato.ID_Pedido = @ID_Pedido;
-      
-      RETURN @Total;
-  END;
+ CREATE FUNCTION CalcularTotalPedido(ID_Pedido INT) 
+ RETURNS DECIMAL(10, 2)
+ DETERMINISTIC
+ BEGIN
+     DECLARE Total DECIMAL(10, 2);
+ 
+     SELECT SUM(pp.Cantidad * i.Precio)
+     INTO Total
+     FROM Pedido_Plato pp
+     JOIN Plato_Ingrediente pi ON pp.ID_Plato = pi.ID_Plato
+     JOIN Ingrediente i ON pi.ID_Ingrediente = i.ID_Ingrediente
+     WHERE pp.ID_Pedido = ID_Pedido;
+ 
+     RETURN Total;
+ END
 ```
 ## Listado de Stored Procedures
 ### RegistrarPedido
-* Descripción: Inserta un nuevo pedido en la base de datos, asignando un cliente y calculando el total automáticamente.
+* Descripción: Inserta un nuevo pedido en la base de datos, asignando un cliente, registrando los platos asociados y calculando el total automáticamente.
 * Objetivo: Facilitar el registro de nuevos pedidos y asegurar que todos los datos relacionados se gestionen de forma coherente y eficiente.
-* Tablas Involucradas: Pedido, Pedido_Plato.
+* Tablas Involucradas: Pedido, Pedido_Plato, Plato_Ingrediente.
 
 ``` sql
-  CREATE PROCEDURE RegistrarPedido
-      @Fecha DATE,
-      @ID_Cliente INT,
-      @PlatosPedido TABLE (ID_Plato INT, Cantidad INT)
-  AS
-  BEGIN
-      DECLARE @ID_Pedido INT;
-      
-      -- Inserta el pedido
-      INSERT INTO Pedido (Fecha, ID_Cliente, Total)
-      VALUES (@Fecha, @ID_Cliente, 0);
-      
-      -- Obtener el ID del pedido recién insertado
-      SET @ID_Pedido = SCOPE_IDENTITY();
-      
-      -- Insertar los platos asociados al pedido
-      INSERT INTO Pedido_Plato (ID_Pedido, ID_Plato, Cantidad)
-      SELECT @ID_Pedido, ID_Plato, Cantidad FROM @PlatosPedido;
-      
-      -- Calcular y actualizar el total del pedido
-      DECLARE @Total DECIMAL(10, 2);
-      SET @Total = (SELECT SUM(Plato_Ingrediente.Precio * Pedido_Plato.Cantidad)
-                    FROM Pedido_Plato
-                    JOIN Plato_Ingrediente ON Pedido_Plato.ID_Plato = Plato_Ingrediente.ID_Plato
-                    WHERE Pedido_Plato.ID_Pedido = @ID_Pedido);
-      
-      UPDATE Pedido
-      SET Total = @Total
-      WHERE ID_Pedido = @ID_Pedido;
-  END;
+ CREATE PROCEDURE RegistrarPedido(
+     IN Fecha DATE,
+     IN ID_Cliente INT,
+     IN Plato1_ID INT, IN Plato1_Cantidad INT,
+     IN Plato2_ID INT, IN Plato2_Cantidad INT,
+     IN Plato3_ID INT, IN Plato3_Cantidad INT -- Puedes agregar más si es necesario
+ )
+ BEGIN
+     DECLARE ID_Pedido INT;
+     DECLARE Total DECIMAL(10, 2);
+ 
+     -- Inserta el pedido
+     INSERT INTO Pedido (Fecha, ID_Cliente, Total)
+     VALUES (Fecha, ID_Cliente, 0);
+ 
+     -- Obtener el ID del pedido recién insertado
+     SET ID_Pedido = LAST_INSERT_ID();
+ 
+     -- Insertar los platos asociados al pedido
+     IF Plato1_ID IS NOT NULL AND Plato1_Cantidad > 0 THEN
+         INSERT INTO Pedido_Plato (ID_Pedido, ID_Plato, Cantidad)
+         VALUES (ID_Pedido, Plato1_ID, Plato1_Cantidad);
+     END IF;
+ 
+     IF Plato2_ID IS NOT NULL AND Plato2_Cantidad > 0 THEN
+         INSERT INTO Pedido_Plato (ID_Pedido, ID_Plato, Cantidad)
+         VALUES (ID_Pedido, Plato2_ID, Plato2_Cantidad);
+     END IF;
+ 
+     IF Plato3_ID IS NOT NULL AND Plato3_Cantidad > 0 THEN
+         INSERT INTO Pedido_Plato (ID_Pedido, ID_Plato, Cantidad)
+         VALUES (ID_Pedido, Plato3_ID, Plato3_Cantidad);
+     END IF;
+ 
+     -- Calcular y actualizar el total del pedido
+     SET Total = (
+         SELECT SUM(pi.Precio * pp.Cantidad)
+         FROM Pedido_Plato pp
+         JOIN Plato_Ingrediente pi ON pp.ID_Plato = pi.ID_Plato
+         WHERE pp.ID_Pedido = ID_Pedido
+     );
+ 
+     UPDATE Pedido
+     SET Total = Total
+     WHERE ID_Pedido = ID_Pedido;
+ END
 ```
