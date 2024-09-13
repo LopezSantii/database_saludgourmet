@@ -230,7 +230,7 @@ SELECT CalcularTotalPedido(1);
 ### CalcularCostoPlato
 * Descripción: Calcula el costo total de los ingredientes utilizados para un plato. 
 * Objetivo: Proporcionar una manera rápida de obtener el costo de los ingredientes asociados a un plato para el análisis de márgenes y precios de los platos.
-* Tablas Compuestas: Plato, Ingrediente, Plato_Ingrediente.
+* Tablas Involucradas: Plato, Ingrediente, Plato_Ingrediente.
 
 ``` sql
   CREATE FUNCTION CalcularCostoPlato(ID_Plato INT)
@@ -282,7 +282,7 @@ SELECT CalcularCostoPlato(1);
 ### ActualizarTotalDespuesDeEliminarPlato
 * Descripción: Actualiza el total de un pedido cuando se elimina un plato de la tabla Pedido_Plato.
 * Objetivo: Mantener actualizado automáticamente el total del pedido tras eliminar un plato.
-* Tablas Compuestas: Pedido, Pedido_Plato, Plato_Ingrediente, Ingrediente.
+* Tablas Involucradas: Pedido, Pedido_Plato, Plato_Ingrediente, Ingrediente.
 
 ``` sql
   CREATE TRIGGER ActualizarTotalDespuesDeEliminarPlato
@@ -367,7 +367,7 @@ Este ejemplo inserta dos platos en el pedido. Si no hay un tercer plato, puedes 
 ### RegistrarNuevoClientePedido
 * Descripción: Registra un nuevo cliente y su pedido asociado en una sola transacción.
 * Objetivo: Facilitar el registro de clientes nuevos junto con su pedido en un solo paso.
-* Tablas Compuestas: Cliente, Pedido, Pedido_Plato, Plato, Plato_Ingrediente.
+* Tablas Involucradas: Cliente, Pedido, Pedido_Plato, Plato, Plato_Ingrediente.
 ``` sql
  CREATE PROCEDURE RegistrarNuevoClientePedido(
     IN NombreCliente VARCHAR(255),
