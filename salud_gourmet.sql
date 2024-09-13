@@ -1,3 +1,7 @@
+-- Crear la base de datos
+CREATE DATABASE SaludGourmet;
+USE SaludGourmet;
+
 CREATE TABLE Cliente (
     ID_Cliente INT AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(255) NOT NULL,
@@ -149,7 +153,7 @@ SELECT
 FROM Cliente
 JOIN Pedido ON Cliente.ID_Cliente = Pedido.ID_Cliente;
 
--- Platos Ingrediientes 
+-- Platos Ingredientes 
 CREATE VIEW VistaPlatosIngredientes AS
 SELECT 
     Plato.Nombre AS Plato,
@@ -159,7 +163,42 @@ FROM Plato
 JOIN Plato_Ingrediente ON Plato.ID_Plato = Plato_Ingrediente.ID_Plato
 JOIN Ingrediente ON Ingrediente.ID_Ingrediente = Plato_Ingrediente.ID_Ingrediente;
 
+-- Ingredientes Utilizados
+CREATE VIEW VistaIngredientesUtilizados AS
+SELECT 
+    Ingrediente.Nombre AS Ingrediente,
+    SUM(Pedido_Plato.Cantidad) AS Total_Utilizado
+FROM Pedido_Plato
+JOIN Plato_Ingrediente ON Pedido_Plato.ID_Plato = Plato_Ingrediente.ID_Plato
+JOIN Ingrediente ON Plato_Ingrediente.ID_Ingrediente = Ingrediente.ID_Ingrediente
+GROUP BY Ingrediente.Nombre;
 
+-- PlatosMas Pedidos
+CREATE VIEW VistaPlatosMasPedidos AS
+SELECT 
+    Plato.Nombre AS Plato,
+    SUM(Pedido_Plato.Cantidad) AS Total_Pedido
+FROM Pedido_Plato
+JOIN Plato ON Pedido_Plato.ID_Plato = Plato.ID_Plato
+GROUP BY Plato.Nombre
+ORDER BY Total_Pedido DESC;
+
+-- Pedidos Clientes Ingredientes
+CREATE VIEW VistaPedidosClientesIngredientes AS
+  SELECT 
+      Cliente.Nombre AS Cliente,
+      Cliente.Apellido AS Apellido,
+      Pedido.ID_Pedido,
+      Plato.Nombre AS Plato,
+      Ingrediente.Nombre AS Ingrediente,
+      Ingrediente.Precio
+  FROM Pedido
+  JOIN Cliente ON Pedido.ID_Cliente = Cliente.ID_Cliente
+  JOIN Pedido_Plato ON Pedido.ID_Pedido = Pedido_Plato.ID_Pedido
+  JOIN Plato ON Pedido_Plato.ID_Plato = Plato.ID_Plato
+  JOIN Plato_Ingrediente ON Plato.ID_Plato = Plato_Ingrediente.ID_Plato
+  JOIN Ingrediente ON Plato_Ingrediente.ID_Ingrediente = Ingrediente.ID_Ingrediente;
+  
 -- Funciones
 -- Total del Pedido
 DELIMITER //
@@ -179,6 +218,29 @@ BEGIN
     RETURN Total;
 END 
 // DELIMITER ;
+
+SELECT CalcularTotalPedido(1);  -- Calcula el costo para el plato con ID 1
+
+-- Total del plato
+DELIMITER //
+CREATE FUNCTION CalcularCostoPlato(ID_Plato INT)
+RETURNS DECIMAL(10, 2)
+DETERMINISTIC
+BEGIN
+    DECLARE CostoTotal DECIMAL(10, 2);
+
+    SELECT SUM(i.Precio)
+    INTO CostoTotal
+    FROM Ingrediente i
+    JOIN Plato_Ingrediente pi ON i.ID_Ingrediente = pi.ID_Ingrediente
+    WHERE pi.ID_Plato = ID_Plato;
+
+    RETURN CostoTotal;
+END 
+// DELIMITER ;
+
+SELECT CalcularCostoPlato(1); -- Calcula el costo total de los ingredientes para el plato con ID 1
+
 
 -- Stored Procedures
 -- RegistrarPedido
@@ -229,4 +291,70 @@ CREATE PROCEDURE RegistrarPedido(
      SET Total = Total
      WHERE ID_Pedido = ID_Pedido;
  END
+// DELIMITER ;
+
+-- RegistrarNuevoClientePedido
+DELIMITER //
+CREATE PROCEDURE RegistrarNuevoClientePedido(
+    IN NombreCliente VARCHAR(255),
+    IN ApellidoCliente VARCHAR(255),
+    IN DireccionCliente VARCHAR(255),
+    IN TelefonoCliente VARCHAR(20),
+    IN FechaPedido DATE,
+    IN Plato1_ID INT, IN Plato1_Cantidad INT,
+    IN Plato2_ID INT, IN Plato2_Cantidad INT,
+    IN Plato3_ID INT, IN Plato3_Cantidad INT
+)
+BEGIN
+    DECLARE ID_Cliente INT;
+    DECLARE ID_Pedido INT;
+
+    -- Insertar el cliente
+    INSERT INTO Cliente (Nombre, Apellido, Dirección, Teléfono)
+    VALUES (NombreCliente, ApellidoCliente, DireccionCliente, TelefonoCliente);
+    
+    SET ID_Cliente = LAST_INSERT_ID();
+
+    -- Registrar el pedido
+    CALL RegistrarPedido(FechaPedido, ID_Cliente, Plato1_ID, Plato1_Cantidad, Plato2_ID, Plato2_Cantidad, Plato3_ID, Plato3_Cantidad);
+END
+// DELIMITER ;
+
+-- Triggers
+-- ActualizarTotalDespuesDeInsertarPlato
+DELIMITER //
+CREATE TRIGGER ActualizarTotalDespuesDeInsertarPlato
+AFTER INSERT ON Pedido_Plato
+FOR EACH ROW
+BEGIN
+    DECLARE nuevo_total DECIMAL(10, 2);
+    SET nuevo_total = (
+        SELECT SUM(pi.Precio * pp.Cantidad)
+        FROM Pedido_Plato pp
+        JOIN Plato_Ingrediente pi ON pp.ID_Plato = pi.ID_Plato
+        WHERE pp.ID_Pedido = NEW.ID_Pedido
+    );
+    UPDATE Pedido
+    SET Total = nuevo_total
+    WHERE ID_Pedido = NEW.ID_Pedido;
+END;
+// DELIMITER ;
+
+-- ActualizarTotalDespuesDeEliminarPlato
+DELIMITER //
+CREATE TRIGGER ActualizarTotalDespuesDeEliminarPlato
+AFTER DELETE ON Pedido_Plato
+FOR EACH ROW
+BEGIN
+    DECLARE nuevo_total DECIMAL(10, 2);
+    SET nuevo_total = (
+        SELECT SUM(pi.Precio * pp.Cantidad)
+        FROM Pedido_Plato pp
+        JOIN Plato_Ingrediente pi ON pp.ID_Plato = pi.ID_Plato
+        WHERE pp.ID_Pedido = OLD.ID_Pedido
+    );
+    UPDATE Pedido
+    SET Total = nuevo_total
+    WHERE ID_Pedido = OLD.ID_Pedido;
+END;
 // DELIMITER ;
