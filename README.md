@@ -125,10 +125,10 @@ Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
 ### Factura
 * Descripción: Almacena la información de las facturas generadas por los pedidos.
 * Campos:
- * ID_Factura (INT, PK): Identificador único de la factura.
- * ID_Pedido (INT, FK): Referencia al pedido correspondiente.
- * Fecha (DATE): Fecha en la que se generó la factura.
- * Importe (DECIMAL(10,2)): Monto total de la factura.
+  * ID_Factura (INT, PK): Identificador único de la factura.
+  * ID_Pedido (INT, FK): Referencia al pedido correspondiente.
+  * Fecha (DATE): Fecha en la que se generó la factura.
+  * Importe (DECIMAL(10,2)): Monto total de la factura.
 
 ``` sql
  CREATE TABLE Factura (
@@ -143,11 +143,11 @@ Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
 ### Transacción_Pago
 * Descripción: Almacena la información de los pagos realizados por los clientes para sus pedidos.
 * Campos:
- * ID_Transaccion (INT, PK): Identificador único de la transacción de pago.
- * ID_Pedido (INT, FK): Referencia al pedido correspondiente.
- * Fecha (DATE): Fecha en la que se realizó el pago.
- * Monto (DECIMAL(10,2)): Monto total del pago.
- * Metodo_Pago (VARCHAR(50)): Método de pago utilizado (ej. Tarjeta de Crédito, PayPal).
+  * ID_Transaccion (INT, PK): Identificador único de la transacción de pago.
+  * ID_Pedido (INT, FK): Referencia al pedido correspondiente.
+  * Fecha (DATE): Fecha en la que se realizó el pago.
+  * Monto (DECIMAL(10,2)): Monto total del pago.
+  * Metodo_Pago (VARCHAR(50)): Método de pago utilizado (ej. Tarjeta de Crédito, PayPal).
 
 ``` sql
  CREATE TABLE Transaccion_Pago (
@@ -163,11 +163,11 @@ Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
 ### Transacción_Envio
 * Descripción: Almacena la información del envío de los pedidos.
 * Campos:
- * ID_Envio (INT, PK): Identificador único de la transacción de envío.
- * ID_Pedido (INT, FK): Referencia al pedido correspondiente.
- * Fecha_Envio (DATE): Fecha en la que el pedido fue enviado.
- * Estado (VARCHAR(50)): Estado actual del envío (ej. Enviado, Entregado).
- * Direccion_Envio (VARCHAR(255)): Dirección donde se realizó la entrega.
+  * ID_Envio (INT, PK): Identificador único de la transacción de envío.
+  * ID_Pedido (INT, FK): Referencia al pedido correspondiente.
+  * Fecha_Envio (DATE): Fecha en la que el pedido fue enviado.
+  * Estado (VARCHAR(50)): Estado actual del envío (ej. Enviado, Entregado).
+  * Direccion_Envio (VARCHAR(255)): Dirección donde se realizó la entrega.
 
 ``` sql
  CREATE TABLE Transaccion_Envio (
@@ -183,8 +183,8 @@ Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
 ### Categoria_Ingrediente
 * Descripción: Almacena las categorías a las que pertenecen los ingredientes.
 * Campos:
- * ID_Categoria (INT, PK): Identificador único de la categoría de ingrediente.
- * Nombre (VARCHAR(255)): Nombre de la categoría (ej. Vegetales, Lácteos).
+  * ID_Categoria (INT, PK): Identificador único de la categoría de ingrediente.
+  * Nombre (VARCHAR(255)): Nombre de la categoría (ej. Vegetales, Lácteos).
 
 ``` sql
  CREATE TABLE Categoria_Ingrediente (
@@ -196,8 +196,8 @@ Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
 ### Ingrediente_Categoria
 * Descripción: Almacena la relación entre los ingredientes y sus categorías.
 * Campos:
- * ID_Ingrediente (INT, FK): Referencia al ingrediente.
- * ID_Categoria (INT, FK): Referencia a la categoría del ingrediente.
+  * ID_Ingrediente (INT, FK): Referencia al ingrediente.
+  * ID_Categoria (INT, FK): Referencia a la categoría del ingrediente.
 
 ``` sql
  CREATE TABLE Ingrediente_Categoria (
@@ -212,9 +212,9 @@ Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
 ### Promocion
 * Descripción: Almacena las promociones disponibles.
 * Campos:
- * ID_Promocion (INT, PK): Identificador único de la promoción.
- * Descuento (DECIMAL(5,2)): Porcentaje de descuento ofrecido.
- * Descripcion (VARCHAR(255)): Descripción de la promoción.
+  * ID_Promocion (INT, PK): Identificador único de la promoción.
+  * Descuento (DECIMAL(5,2)): Porcentaje de descuento ofrecido.
+  * Descripcion (VARCHAR(255)): Descripción de la promoción.
 
 ``` sql
  CREATE TABLE Promocion (
@@ -227,8 +227,8 @@ Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
 ### Pedido_Promocion
 * Descripción: Almacena la relación entre los pedidos y las promociones aplicadas.
 * Campos:
- * ID_Pedido (INT, FK): Referencia al pedido.
- * ID_Promocion (INT, FK): Referencia a la promoción.
+  * ID_Pedido (INT, FK): Referencia al pedido.
+  * ID_Promocion (INT, FK): Referencia a la promoción.
 
 ``` sql
  CREATE TABLE Pedido_Promocion (
@@ -243,10 +243,10 @@ Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
 ### Proveedor
 * Descripción: Almacena la información de los proveedores de ingredientes.
 * Campos:
- * ID_Proveedor (INT, PK): Identificador único del proveedor.
- * Nombre (VARCHAR(255)): Nombre del proveedor.
- * Telefono (VARCHAR(20)): Teléfono del proveedor.
- * Direccion (VARCHAR(255)): Dirección del proveedor.
+  * ID_Proveedor (INT, PK): Identificador único del proveedor.
+  * Nombre (VARCHAR(255)): Nombre del proveedor.
+  * Telefono (VARCHAR(20)): Teléfono del proveedor.
+  * Direccion (VARCHAR(255)): Dirección del proveedor.
 
 ``` sql
  CREATE TABLE Proveedor (
@@ -260,8 +260,8 @@ Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
 ### Proveedor_Ingrediente
 * Descripción: Almacena la relación entre los proveedores y los ingredientes que suministran.
 * Campos:
- * ID_Proveedor (INT, FK): Referencia al proveedor.
- * ID_Ingrediente (INT, FK): Referencia al ingrediente.
+  * ID_Proveedor (INT, FK): Referencia al proveedor.
+  * ID_Ingrediente (INT, FK): Referencia al ingrediente.
 
 ``` sql
  CREATE TABLE Proveedor_Ingrediente (
