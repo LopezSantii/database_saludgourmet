@@ -404,3 +404,28 @@ Se lo puede invocar de la siguiente forma:
 ```
 
 Este ejemplo inserta un nuevo cliente llamado Juan Pérez y registra un pedido con dos platos. Si no hay un tercer plato, puedes pasar NULL para Plato3_ID y Plato3_Cantidad.
+
+## Informes
+### Total de Ventas por Cliente
+``` sql
+ SELECT Cliente.Nombre, Cliente.Apellido, SUM(Pedido.Total) AS Total_Comprado
+ FROM Cliente
+ JOIN Pedido ON Cliente.ID_Cliente = Pedido.ID_Cliente
+ GROUP BY Cliente.ID_Cliente;
+```
+
+### Cantidad de Pedidos por Día
+``` sql
+ SELECT Fecha, COUNT(*) AS Pedidos_Realizados
+ FROM Pedido
+ GROUP BY Fecha;
+```
+
+### Ingredientes más Utilizados
+``` sql
+ SELECT Ingrediente.Nombre, COUNT(*) AS Veces_Usado
+ FROM Plato_Ingrediente
+ JOIN Ingrediente ON Plato_Ingrediente.ID_Ingrediente = Ingrediente.ID_Ingrediente
+ GROUP BY Ingrediente.ID_Ingrediente
+ ORDER BY Veces_Usado DESC;
+```
