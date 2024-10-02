@@ -46,6 +46,84 @@ CREATE TABLE Pedido_Plato (
     FOREIGN KEY (ID_Plato) REFERENCES Plato(ID_Plato)
 );
 
+-- Tabla de hechos: Facturas
+CREATE TABLE Factura (
+    ID_Factura INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Pedido INT,
+    Fecha DATE NOT NULL,
+    Importe DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido)
+);
+
+-- Tabla transaccional: Transacción de Pago
+CREATE TABLE Transaccion_Pago (
+    ID_Transaccion INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Pedido INT,
+    Fecha DATE NOT NULL,
+    Monto DECIMAL(10, 2) NOT NULL,
+    Metodo_Pago VARCHAR(50) NOT NULL,
+    FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido)
+);
+
+-- Tabla transaccional: Transacción de Envío
+CREATE TABLE Transaccion_Envio (
+    ID_Envio INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Pedido INT,
+    Fecha_Envio DATE NOT NULL,
+    Estado VARCHAR(50) NOT NULL,
+    Direccion_Envio VARCHAR(255) NOT NULL,
+    FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido)
+);
+
+-- Tabla Categoría de Ingredientes
+CREATE TABLE Categoria_Ingrediente (
+    ID_Categoria INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(255) NOT NULL
+);
+
+-- Relación Ingrediente-Categoría
+CREATE TABLE Ingrediente_Categoria (
+    ID_Ingrediente INT,
+    ID_Categoria INT,
+    PRIMARY KEY (ID_Ingrediente, ID_Categoria),
+    FOREIGN KEY (ID_Ingrediente) REFERENCES Ingrediente(ID_Ingrediente),
+    FOREIGN KEY (ID_Categoria) REFERENCES Categoria_Ingrediente(ID_Categoria)
+);
+
+-- Tabla Promociones
+CREATE TABLE Promocion (
+    ID_Promocion INT AUTO_INCREMENT PRIMARY KEY,
+    Descuento DECIMAL(5, 2) NOT NULL,
+    Descripcion VARCHAR(255) NOT NULL
+);
+
+-- Relación Pedido-Promoción
+CREATE TABLE Pedido_Promocion (
+    ID_Pedido INT,
+    ID_Promocion INT,
+    PRIMARY KEY (ID_Pedido, ID_Promocion),
+    FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido),
+    FOREIGN KEY (ID_Promocion) REFERENCES Promocion(ID_Promocion)
+);
+
+-- Tabla de proveedores
+CREATE TABLE Proveedor (
+    ID_Proveedor INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(255) NOT NULL,
+    Telefono VARCHAR(20),
+    Direccion VARCHAR(255)
+);
+
+-- Relación Proveedor-Ingrediente
+CREATE TABLE Proveedor_Ingrediente (
+    ID_Proveedor INT,
+    ID_Ingrediente INT,
+    PRIMARY KEY (ID_Proveedor, ID_Ingrediente),
+    FOREIGN KEY (ID_Proveedor) REFERENCES Proveedor(ID_Proveedor),
+    FOREIGN KEY (ID_Ingrediente) REFERENCES Ingrediente(ID_Ingrediente)
+);
+
+
 -- Insercion de datos 
 
 -- Clientes
@@ -89,6 +167,68 @@ VALUES ('Ensalada Caprese');
 
 INSERT INTO Plato (Nombre)
 VALUES ('Ensalada de Quinoa');
+
+-- Pedidos
+INSERT INTO Pedido (Fecha, Total, ID_Cliente)
+VALUES ('2024-09-05', 14.5, 1);
+
+INSERT INTO Pedido (Fecha, Total, ID_Cliente)
+VALUES ('2024-09-06', 10.0, 2);
+
+INSERT INTO Pedido (Fecha, Total, ID_Cliente)
+VALUES ('2024-09-07', 12.5, 1);
+
+INSERT INTO Pedido (Fecha, Total, ID_Cliente)
+VALUES ('2024-09-08', 9.8, 3);
+
+-- Relaciones de Platos e Ingredientes
+
+INSERT INTO Plato_Ingrediente (ID_Plato, ID_Ingrediente)
+VALUES (1, 3), (1, 4); 
+
+INSERT INTO Plato_Ingrediente (ID_Plato, ID_Ingrediente)
+VALUES (2, 2), (2, 1);
+
+
+INSERT INTO Plato_Ingrediente (ID_Plato, ID_Ingrediente)
+VALUES (3, 3), (3, 2), (3, 5); 
+
+
+INSERT INTO Plato_Ingrediente (ID_Plato, ID_Ingrediente)
+VALUES (4, 4), (4, 1), (4, 5); 
+
+-- Factura
+INSERT INTO Factura (ID_Pedido, Fecha, Importe) VALUES (1, '2024-09-01', 12.5);
+INSERT INTO Factura (ID_Pedido, Fecha, Importe) VALUES (2, '2024-09-02', 8.0);
+
+-- Transacciones de Pago
+INSERT INTO Transaccion_Pago (ID_Pedido, Fecha, Monto, Metodo_Pago) 
+VALUES (1, '2024-09-01', 12.5, 'Tarjeta de Crédito');
+
+INSERT INTO Transaccion_Pago (ID_Pedido, Fecha, Monto, Metodo_Pago) 
+VALUES (2, '2024-09-02', 8.0, 'PayPal');
+
+-- Transacciones de Envío
+INSERT INTO Transaccion_Envio (ID_Pedido, Fecha_Envio, Estado, Direccion_Envio)
+VALUES (1, '2024-09-02', 'Entregado', 'Avenida Siempre Viva 456');
+
+-- Categorías de Ingredientes
+INSERT INTO Categoria_Ingrediente (Nombre) VALUES ('Vegetales');
+INSERT INTO Categoria_Ingrediente (Nombre) VALUES ('Lácteos');
+
+-- Ingredientes y Categorías
+INSERT INTO Ingrediente_Categoria (ID_Ingrediente, ID_Categoria) VALUES (1, 1);
+INSERT INTO Ingrediente_Categoria (ID_Ingrediente, ID_Categoria) VALUES (5, 2);
+
+-- Proveedores
+INSERT INTO Proveedor (Nombre, Telefono, Direccion) VALUES ('Proveedor A', '123456789', 'Calle Falsa 123');
+
+-- Relación Proveedor-Ingrediente
+INSERT INTO Proveedor_Ingrediente (ID_Proveedor, ID_Ingrediente) VALUES (1, 1);
+
+-- Promociones
+INSERT INTO Promocion (Descuento, Descripcion) VALUES (10, 'Promoción de Verano');
+INSERT INTO Pedido_Promocion (ID_Pedido, ID_Promocion) VALUES (1, 1);
 
 -- Plato_Ingrediente
 -- Ensalada César
@@ -358,3 +498,23 @@ BEGIN
     WHERE ID_Pedido = OLD.ID_Pedido;
 END;
 // DELIMITER ;
+
+-- Informes
+-- Total de Ventas por Cliente
+SELECT Cliente.Nombre, Cliente.Apellido, SUM(Pedido.Total) AS Total_Comprado
+FROM Cliente
+JOIN Pedido ON Cliente.ID_Cliente = Pedido.ID_Cliente
+GROUP BY Cliente.ID_Cliente;
+
+-- Cantidad de Pedidos por Día
+SELECT Fecha, COUNT(*) AS Pedidos_Realizados
+FROM Pedido
+GROUP BY Fecha;
+
+-- Ingredientes más Utilizados
+SELECT Ingrediente.Nombre, COUNT(*) AS Veces_Usado
+FROM Plato_Ingrediente
+JOIN Ingrediente ON Plato_Ingrediente.ID_Ingrediente = Ingrediente.ID_Ingrediente
+GROUP BY Ingrediente.ID_Ingrediente
+ORDER BY Veces_Usado DESC;
+
