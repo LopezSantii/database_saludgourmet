@@ -10,12 +10,12 @@ La base de datos está diseñada para **Salud Gourmet**, una empresa que vende c
 * Un **Plato** puede estar en **muchos Pedidos**.
 * Un **Plato** puede tener muchos **Ingredientes**.
 * Un **Ingrediente** puede estar en muchos **Platos**.
-* Un Pedido puede generar una Factura.
-* Un Pedido puede tener un Pago.
-* Un Pedido puede tener un Envío.
-* Un Ingrediente puede pertenecer a muchas Categorías.
-* Un Pedido puede estar asociado a muchas Promociones.
-* Un Ingrediente puede ser suministrado por muchos Proveedores.
+* Un **Pedido** puede generar una **Factura**.
+* Un **Pedido** puede tener un **Pago**.
+* Un **Pedido** puede tener un **Envío**.
+* Un **Ingrediente** puede pertenecer a muchas **Categorías**.
+* Un **Pedido** puede estar asociado a muchas **Promociones**.
+* Un **Ingrediente** puede ser suministrado por muchos **Proveedores**.
 
 ## Listado de las tablas que comprenden la base de datos
 Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
