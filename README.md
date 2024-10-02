@@ -2,8 +2,7 @@
 La base de datos está diseñada para **Salud Gourmet**, una empresa que vende comida saludable por internet. Su objetivo es gestionar la información relacionada con los clientes, los platos saludables ofrecidos, los ingredientes utilizados en cada plato y los pedidos realizados por los clientes. La base de datos permite almacenar y organizar datos de manera eficiente para facilitar la gestión de pedidos, la preparación de platos saludables y el seguimiento de los ingredientes.
 
 ## Diagramas de entidad-relación de la base de datos
-![Diagrama de relación de entidad - Marco 1](https://github.com/user-attachments/assets/8d04901a-af36-47e9-912e-0f0c7594867a)
-
+![Diagrama de relación de entidad - Marco 1](https://github.com/user-attachments/assets/99a4f937-4497-4281-b3ef-2d2f1b3b7da0)
 
 ### Relaciones:
 * Un **Cliente** puede realizar muchos **Pedidos**.
