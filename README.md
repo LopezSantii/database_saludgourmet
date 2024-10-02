@@ -18,10 +18,7 @@ La base de datos está diseñada para **Salud Gourmet**, una empresa que vende c
 * Un **Ingrediente** puede ser suministrado por muchos **Proveedores**.
 
 ## Listado de las tablas que comprenden la base de datos
-Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
-![image](https://github.com/user-attachments/assets/cbc3634c-40d8-4dea-b666-548587f82eda)
-#### Enlaces
-* [Diagrama](https://miro.com/welcomeonboard/cVFEd1FPSjJFVU8xNTEwbFQ3OXlGcUtvNnEzdE53SzI2NERIZ3BEMkNGWHVEMU5vaEh6Nk42UDRpTFU0dG5EeXwzNDU4NzY0NTk1NDcwNzUxMzY1fDI=?share_link_id=974823417710)
+Las relaciones N:M generaron nuevas tablas y quedaron asi:
 
 ### Cliente
 * Descripción: Almacena la información de los clientes.
@@ -588,3 +585,7 @@ Algunos scripts que pueden ser de utilidad para realizar informes
  GROUP BY Ingrediente.ID_Ingrediente
  ORDER BY Veces_Usado DESC;
 ```
+
+## Herramientas
+Para realizar el diagrama use **Miro** que es una plataforma para realizar diagramas
+* [Diagrama](https://miro.com/welcomeonboard/cVFEd1FPSjJFVU8xNTEwbFQ3OXlGcUtvNnEzdE53SzI2NERIZ3BEMkNGWHVEMU5vaEh6Nk42UDRpTFU0dG5EeXwzNDU4NzY0NTk1NDcwNzUxMzY1fDI=?share_link_id=974823417710)
