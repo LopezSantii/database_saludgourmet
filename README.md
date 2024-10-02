@@ -10,6 +10,12 @@ La base de datos está diseñada para **Salud Gourmet**, una empresa que vende c
 * Un **Plato** puede estar en **muchos Pedidos**.
 * Un **Plato** puede tener muchos **Ingredientes**.
 * Un **Ingrediente** puede estar en muchos **Platos**.
+* Un Pedido puede generar una Factura.
+* Un Pedido puede tener un Pago.
+* Un Pedido puede tener un Envío.
+* Un Ingrediente puede pertenecer a muchas Categorías.
+* Un Pedido puede estar asociado a muchas Promociones.
+* Un Ingrediente puede ser suministrado por muchos Proveedores.
 
 ## Listado de las tablas que comprenden la base de datos
 Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
@@ -115,6 +121,158 @@ Las relaciones N:M generaron nuevas tablas y el diagrama quedo algo asi:
    FOREIGN KEY (ID_Plato) REFERENCES Plato(ID_Plato)
  );
 ```
+
+### Factura
+* Descripción: Almacena la información de las facturas generadas por los pedidos.
+* Campos:
+ * ID_Factura (INT, PK): Identificador único de la factura.
+ * ID_Pedido (INT, FK): Referencia al pedido correspondiente.
+ * Fecha (DATE): Fecha en la que se generó la factura.
+ * Importe (DECIMAL(10,2)): Monto total de la factura.
+
+``` sql
+ CREATE TABLE Factura (
+    ID_Factura INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Pedido INT,
+    Fecha DATE NOT NULL,
+    Importe DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido)
+);
+```
+
+### Transacción_Pago
+* Descripción: Almacena la información de los pagos realizados por los clientes para sus pedidos.
+* Campos:
+ * ID_Transaccion (INT, PK): Identificador único de la transacción de pago.
+ * ID_Pedido (INT, FK): Referencia al pedido correspondiente.
+ * Fecha (DATE): Fecha en la que se realizó el pago.
+ * Monto (DECIMAL(10,2)): Monto total del pago.
+ * Metodo_Pago (VARCHAR(50)): Método de pago utilizado (ej. Tarjeta de Crédito, PayPal).
+
+``` sql
+ CREATE TABLE Transaccion_Pago (
+    ID_Transaccion INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Pedido INT,
+    Fecha DATE NOT NULL,
+    Monto DECIMAL(10, 2) NOT NULL,
+    Metodo_Pago VARCHAR(50) NOT NULL,
+    FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido)
+);
+```
+
+### Transacción_Envio
+* Descripción: Almacena la información del envío de los pedidos.
+* Campos:
+ * ID_Envio (INT, PK): Identificador único de la transacción de envío.
+ * ID_Pedido (INT, FK): Referencia al pedido correspondiente.
+ * Fecha_Envio (DATE): Fecha en la que el pedido fue enviado.
+ * Estado (VARCHAR(50)): Estado actual del envío (ej. Enviado, Entregado).
+ * Direccion_Envio (VARCHAR(255)): Dirección donde se realizó la entrega.
+
+``` sql
+ CREATE TABLE Transaccion_Envio (
+    ID_Envio INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Pedido INT,
+    Fecha_Envio DATE NOT NULL,
+    Estado VARCHAR(50) NOT NULL,
+    Direccion_Envio VARCHAR(255) NOT NULL,
+    FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido)
+);
+```
+
+### Categoria_Ingrediente
+* Descripción: Almacena las categorías a las que pertenecen los ingredientes.
+* Campos:
+ * ID_Categoria (INT, PK): Identificador único de la categoría de ingrediente.
+ * Nombre (VARCHAR(255)): Nombre de la categoría (ej. Vegetales, Lácteos).
+
+``` sql
+ CREATE TABLE Categoria_Ingrediente (
+    ID_Categoria INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(255) NOT NULL
+);
+```
+
+### Ingrediente_Categoria
+* Descripción: Almacena la relación entre los ingredientes y sus categorías.
+* Campos:
+ * ID_Ingrediente (INT, FK): Referencia al ingrediente.
+ * ID_Categoria (INT, FK): Referencia a la categoría del ingrediente.
+
+``` sql
+ CREATE TABLE Ingrediente_Categoria (
+    ID_Ingrediente INT,
+    ID_Categoria INT,
+    PRIMARY KEY (ID_Ingrediente, ID_Categoria),
+    FOREIGN KEY (ID_Ingrediente) REFERENCES Ingrediente(ID_Ingrediente),
+    FOREIGN KEY (ID_Categoria) REFERENCES Categoria_Ingrediente(ID_Categoria)
+);
+```
+
+### Promocion
+* Descripción: Almacena las promociones disponibles.
+* Campos:
+ * ID_Promocion (INT, PK): Identificador único de la promoción.
+ * Descuento (DECIMAL(5,2)): Porcentaje de descuento ofrecido.
+ * Descripcion (VARCHAR(255)): Descripción de la promoción.
+
+``` sql
+ CREATE TABLE Promocion (
+    ID_Promocion INT AUTO_INCREMENT PRIMARY KEY,
+    Descuento DECIMAL(5, 2) NOT NULL,
+    Descripcion VARCHAR(255) NOT NULL
+);
+```
+
+### Pedido_Promocion
+* Descripción: Almacena la relación entre los pedidos y las promociones aplicadas.
+* Campos:
+ * ID_Pedido (INT, FK): Referencia al pedido.
+ * ID_Promocion (INT, FK): Referencia a la promoción.
+
+``` sql
+ CREATE TABLE Pedido_Promocion (
+    ID_Pedido INT,
+    ID_Promocion INT,
+    PRIMARY KEY (ID_Pedido, ID_Promocion),
+    FOREIGN KEY (ID_Pedido) REFERENCES Pedido(ID_Pedido),
+    FOREIGN KEY (ID_Promocion) REFERENCES Promocion(ID_Promocion)
+);
+```
+
+### Proveedor
+* Descripción: Almacena la información de los proveedores de ingredientes.
+* Campos:
+ * ID_Proveedor (INT, PK): Identificador único del proveedor.
+ * Nombre (VARCHAR(255)): Nombre del proveedor.
+ * Telefono (VARCHAR(20)): Teléfono del proveedor.
+ * Direccion (VARCHAR(255)): Dirección del proveedor.
+
+``` sql
+ CREATE TABLE Proveedor (
+    ID_Proveedor INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(255) NOT NULL,
+    Telefono VARCHAR(20),
+    Direccion VARCHAR(255)
+);
+```
+
+### Proveedor_Ingrediente
+* Descripción: Almacena la relación entre los proveedores y los ingredientes que suministran.
+* Campos:
+ * ID_Proveedor (INT, FK): Referencia al proveedor.
+ * ID_Ingrediente (INT, FK): Referencia al ingrediente.
+
+``` sql
+ CREATE TABLE Proveedor_Ingrediente (
+    ID_Proveedor INT,
+    ID_Ingrediente INT,
+    PRIMARY KEY (ID_Proveedor, ID_Ingrediente),
+    FOREIGN KEY (ID_Proveedor) REFERENCES Proveedor(ID_Proveedor),
+    FOREIGN KEY (ID_Ingrediente) REFERENCES Ingrediente(ID_Ingrediente)
+);
+```
+
 ## Listado de Vistas
 ### VistaClientesPedidos
 * Descripción: Muestra la lista de clientes junto con los pedidos que han realizado.
@@ -405,6 +563,8 @@ Se lo puede invocar de la siguiente forma:
 Este ejemplo inserta un nuevo cliente llamado Juan Pérez y registra un pedido con dos platos. Si no hay un tercer plato, puedes pasar NULL para Plato3_ID y Plato3_Cantidad.
 
 ## Informes
+Algunos scripts que pueden ser de utilidad para realizar informes
+
 ### Total de Ventas por Cliente
 ``` sql
  SELECT Cliente.Nombre, Cliente.Apellido, SUM(Pedido.Total) AS Total_Comprado
